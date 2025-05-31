@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Service pour le backend FastAPI
+  backend:
+    build: ./backend
+    container_name: finance-app-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=finance_app
+      - REDIS_HOST=redis
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-for-jwt}
+      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    volumes:
+      - ./backend/app:/app/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - finance-network
+
+  # Service pour le frontend Vue.js
+  frontend:
+    build: ./frontend
+    container_name: finance-app-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - finance-network
+
+  # Service pour la base de données PostgreSQL
+  db:
+    image: postgres:14-alpine
+    container_name: finance-app-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=finance_app
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - finance-network
+
+  # Service pour Redis (cache et file d'attente)
+  redis:
+    image: redis:alpine
+    container_name: finance-app-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - finance-network
+
+  # Service pour pgAdmin (interface d'administration PostgreSQL)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: finance-app-pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - finance-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  finance-network:
+    driver: bridge
