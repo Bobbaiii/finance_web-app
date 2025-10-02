@@ -92,6 +92,17 @@ L'intégration WhatsApp nécessite un compte WhatsApp Business API. Consultez la
 2. Configurez vos canaux de notification préférés
 3. Activez/désactivez les alertes selon vos besoins
 
+## API Backend
+
+L'API FastAPI exposée via `/api/v1` propose plusieurs groupes d'endpoints :
+
+- **/users** : inscription, authentification JWT, consultation et mise à jour des préférences de notification.
+- **/portfolios** : création, consultation, mise à jour et suppression de portefeuilles ainsi que gestion des transactions et calcul des performances.
+- **/alerts** : gestion complète des alertes sur les actifs suivis (création, lecture, modification, suppression).
+- **/analysis** : récupération des données de marché, calcul d'indicateurs techniques et analyse ICT sur les actifs financiers.
+
+Chaque route applique les protections d'authentification et s'appuie sur les services métiers pour garantir la cohérence des données (PostgreSQL) et l'accès aux APIs financières externes.
+
 ## Développement
 
 ### Structure du projet

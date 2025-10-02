@@ -1,7 +1,8 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from app.models.models import Portfolio, Asset, Transaction, User
-from app.schemas.schemas import PortfolioCreate, PortfolioUpdate, TransactionCreate
+
+from app.models import Portfolio, Asset, Transaction, User
+from app.schemas import PortfolioCreate, PortfolioUpdate, TransactionCreate
 from datetime import datetime
 
 class PortfolioService:

@@ -3,8 +3,13 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from app.models.models import User, NotificationSetting
-from app.schemas.schemas import UserCreate, NotificationSettingCreate, NotificationSettingUpdate
+
+from app.models import User, NotificationSetting
+from app.schemas import (
+    UserCreate,
+    NotificationSettingCreate,
+    NotificationSettingUpdate,
+)
 from app.core.config import settings
 
 # Configuration du hachage des mots de passe

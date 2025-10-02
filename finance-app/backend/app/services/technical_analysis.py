@@ -3,6 +3,14 @@ import numpy as np
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 
+
+def _format_index(index_value: Any) -> str:
+    """Formatte l'index d'une série pandas pour l'inclure dans la réponse JSON."""
+
+    if isinstance(index_value, datetime):
+        return index_value.strftime("%Y-%m-%d")
+    return str(index_value)
+
 class TechnicalAnalysisService:
     """
     Service pour calculer les indicateurs techniques classiques et les concepts ICT.
@@ -329,34 +337,119 @@ class TechnicalAnalysisService:
         return liquidity_levels
     
     @staticmethod
-    def _find_equal_highs_lows(df: pd.DataFrame, tolerance: float = 0.001) -> List[Dict[str, Any]]:
-        """
-        Identifie les Equal Highs et Equal Lows dans les données.
-        Ce sont des niveaux où le prix a atteint le même niveau plusieurs fois.
-        """
-        equal_levels = []
-        
-        # Calculer la tolérance en fonction de l'ATR
-        if 'ATR' in df.columns:
-            tolerance_value = df['ATR'].mean() * tolerance
-        else:
-            tolerance_value = df['Close'].mean() * tolerance
-        
-        # Trouver les Equal Highs
-        for i in range(10, len(df)):
-            for j in range(max(0, i-20), i-5):
-                if abs(df['High'].iloc[i] - df['High'].iloc[j]) < tolerance_value:
-                    equal_levels.append({
-                        'type': 'equal_high',
-                        'date1': df.index[j].strftime('%Y-%m-%d') if isinstance(df.index[j], datetime) else str(df.index[j]),
-                        'date2': df.index[i].strftime('%Y-%m-%d') if isinstance(df.index[i], datetime) else str(df.index[i]),
-                        'level': float(df['High'].iloc[i]),
-                        'difference': float(abs(df['High'].iloc[i] - df['High'].iloc[j]))
-                    })
+    def _find_equal_highs_lows(
+        df: pd.DataFrame, tolerance: float = 0.001
+    ) -> List[Dict[str, Any]]:
+        """Identifie les Equal Highs et Equal Lows dans les données de marché."""
+
+        equal_levels: List[Dict[str, Any]] = []
+        if df.empty:
+            return equal_levels
+
+        tolerance_value = (
+            df["ATR"].mean() * tolerance
+            if "ATR" in df.columns and not df["ATR"].isna().all()
+            else df["Close"].mean() * tolerance
+        )
+
+        lookback = 20
+        for i in range(1, len(df)):
+            for j in range(max(0, i - lookback), i):
+                if abs(df["High"].iloc[i] - df["High"].iloc[j]) <= tolerance_value:
+                    equal_levels.append(
+                        {
+                            "type": "equal_high",
+                            "date1": _format_index(df.index[j]),
+                            "date2": _format_index(df.index[i]),
+                            "level": float(df["High"].iloc[i]),
+                            "difference": float(
+                                abs(df["High"].iloc[i] - df["High"].iloc[j])
+                            ),
+                        }
+                    )
                     break
-        
-        # Trouver les Equal Lows
-        for i in range(10, len(df)):
-            for j in range(max(0, i-20), i-5):
-                if abs(df['Low'].iloc[i] - df['Low'].iloc[j]) < tolera
-(Content truncated due to size limit. Use line ranges to read in chunks)
+
+        for i in range(1, len(df)):
+            for j in range(max(0, i - lookback), i):
+                if abs(df["Low"].iloc[i] - df["Low"].iloc[j]) <= tolerance_value:
+                    equal_levels.append(
+                        {
+                            "type": "equal_low",
+                            "date1": _format_index(df.index[j]),
+                            "date2": _format_index(df.index[i]),
+                            "level": float(df["Low"].iloc[i]),
+                            "difference": float(
+                                abs(df["Low"].iloc[i] - df["Low"].iloc[j])
+                            ),
+                        }
+                    )
+                    break
+
+        return equal_levels
+
+    @staticmethod
+    def _find_breaker_blocks(df: pd.DataFrame, lookback: int = 5) -> List[Dict[str, Any]]:
+        """Détecte des breaker blocks simples à partir des cassures de structure."""
+
+        breaker_blocks: List[Dict[str, Any]] = []
+        if len(df) <= lookback:
+            return breaker_blocks
+
+        for i in range(lookback, len(df)):
+            previous_high = float(df["High"].iloc[i - lookback : i].max())
+            previous_low = float(df["Low"].iloc[i - lookback : i].min())
+            close_price = float(df["Close"].iloc[i])
+            date = _format_index(df.index[i])
+
+            if close_price > previous_high:
+                breaker_blocks.append(
+                    {
+                        "type": "bullish",
+                        "date": date,
+                        "level": previous_high,
+                        "confirmation": close_price,
+                    }
+                )
+            elif close_price < previous_low:
+                breaker_blocks.append(
+                    {
+                        "type": "bearish",
+                        "date": date,
+                        "level": previous_low,
+                        "confirmation": close_price,
+                    }
+                )
+
+        return breaker_blocks
+
+    @staticmethod
+    def _find_imbalance(df: pd.DataFrame) -> List[Dict[str, Any]]:
+        """Identifie les zones d'imbalance (gaps) entre deux bougies consécutives."""
+
+        imbalances: List[Dict[str, Any]] = []
+        for i in range(1, len(df)):
+            current_low = float(df["Low"].iloc[i])
+            current_high = float(df["High"].iloc[i])
+            previous_high = float(df["High"].iloc[i - 1])
+            previous_low = float(df["Low"].iloc[i - 1])
+
+            if current_low > previous_high:
+                imbalances.append(
+                    {
+                        "type": "gap_up",
+                        "date": _format_index(df.index[i]),
+                        "upper": current_low,
+                        "lower": previous_high,
+                    }
+                )
+            elif current_high < previous_low:
+                imbalances.append(
+                    {
+                        "type": "gap_down",
+                        "date": _format_index(df.index[i]),
+                        "upper": previous_low,
+                        "lower": current_high,
+                    }
+                )
+
+        return imbalances
