@@ -139,6 +139,14 @@ class NotificationSetting(NotificationSettingBase):
     class Config:
         orm_mode = True
 
+
+class NotificationSettingUpdate(BaseModel):
+    email_enabled: Optional[bool] = None
+    telegram_enabled: Optional[bool] = None
+    telegram_chat_id: Optional[str] = None
+    whatsapp_enabled: Optional[bool] = None
+    whatsapp_number: Optional[str] = None
+
 # Token Schemas
 class Token(BaseModel):
     access_token: str

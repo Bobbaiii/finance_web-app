@@ -1,7 +1,8 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from app.models.models import Alert, User, Asset, NotificationSetting
-from app.schemas.schemas import AlertCreate, AlertUpdate
+
+from app.models import Alert, User, Asset, NotificationSetting
+from app.schemas import AlertCreate, AlertUpdate
 from datetime import datetime
 import aiohttp
 import smtplib
