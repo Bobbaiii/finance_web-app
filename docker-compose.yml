@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Service pour le backend FastAPI
   backend:
-    build: ./backend
+    build: ./finance-app/backend
     container_name: finance-app-backend
     restart: always
     ports:
@@ -21,7 +21,7 @@ services:
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
     volumes:
-      - ./backend:/app
+      - ./finance-app/backend:/app
     depends_on:
       - db
       - redis
@@ -30,13 +30,13 @@ services:
 
   # Service pour le frontend Vue.js
   frontend:
-    build: ./frontend
+    build: ./finance-app/frontend
     container_name: finance-app-frontend
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ./frontend:/app
+      - ./finance-app/frontend:/app
       - /app/node_modules
     depends_on:
       - backend
