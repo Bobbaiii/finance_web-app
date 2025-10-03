@@ -236,11 +236,11 @@ export default {
     const store = useStore()
     const router = useRouter()
     const toast = useToast()
-    
+
     const alerts = ref([])
     const showDeleteConfirmModal = ref(false)
     const alertToDelete = ref(null)
-    
+
     const notificationSettings = ref({
       email_enabled: true,
       telegram_enabled: false,
@@ -248,15 +248,145 @@ export default {
       telegram_chat_id: '',
       whatsapp_number: ''
     })
-    
+
     onMounted(async () => {
       await fetchAlerts()
       await fetchNotificationSettings()
     })
-    
+
     const fetchAlerts = async () => {
       try {
         store.dispatch('setLoading', true)
         await store.dispatch('alerts/fetchAlerts')
-        alerts.valu
-(Content truncated due to size limit. Use line ranges to read in chunks)
+        alerts.value = store.getters['alerts/getAlerts']
+      } catch (error) {
+        console.error('Erreur lors de la récupération des alertes :', error)
+        toast.error('Impossible de récupérer les alertes pour le moment')
+      } finally {
+        store.dispatch('setLoading', false)
+      }
+    }
+
+    const fetchNotificationSettings = async () => {
+      try {
+        store.dispatch('setLoading', true)
+        const settings = await store.dispatch('alerts/fetchNotificationSettings')
+        if (settings) {
+          notificationSettings.value = {
+            ...notificationSettings.value,
+            ...settings
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des paramètres de notification :', error)
+        toast.error('Impossible de charger les paramètres de notification')
+      } finally {
+        store.dispatch('setLoading', false)
+      }
+    }
+
+    const saveNotificationSettings = async () => {
+      try {
+        store.dispatch('setLoading', true)
+        await store.dispatch('alerts/updateNotificationSettings', {
+          email_enabled: notificationSettings.value.email_enabled,
+          telegram_enabled: notificationSettings.value.telegram_enabled,
+          whatsapp_enabled: notificationSettings.value.whatsapp_enabled,
+          telegram_chat_id: notificationSettings.value.telegram_chat_id,
+          whatsapp_number: notificationSettings.value.whatsapp_number
+        })
+        toast.success('Paramètres de notification mis à jour')
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour des paramètres de notification :', error)
+        toast.error('Impossible d\'enregistrer les paramètres de notification')
+      } finally {
+        store.dispatch('setLoading', false)
+      }
+    }
+
+    const formatCondition = (condition) => {
+      const labels = {
+        price_above: 'Prix supérieur à',
+        price_below: 'Prix inférieur à',
+        percentage_change: 'Variation en pourcentage',
+        cross_up: 'Croisement haussier',
+        cross_down: 'Croisement baissier'
+      }
+      return labels[condition] || condition
+    }
+
+    const formatPrice = (value) => {
+      if (value === null || value === undefined || value === '') {
+        return '-'
+      }
+
+      const number = Number(value)
+      if (Number.isNaN(number)) {
+        return value
+      }
+
+      return number.toLocaleString('fr-FR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    }
+
+    const getAlertStatus = (alert) => {
+      if (!alert?.is_active) {
+        return 'Inactive'
+      }
+
+      if (alert.last_triggered) {
+        return 'Déclenchée'
+      }
+
+      return 'Active'
+    }
+
+    const editAlert = (alert) => {
+      if (!alert) return
+      router.push({
+        name: 'EditAlert',
+        params: { id: alert.id }
+      })
+    }
+
+    const confirmDeleteAlert = (alert) => {
+      alertToDelete.value = alert
+      showDeleteConfirmModal.value = true
+    }
+
+    const deleteAlert = async () => {
+      if (!alertToDelete.value) return
+
+      try {
+        store.dispatch('setLoading', true)
+        await store.dispatch('alerts/deleteAlert', alertToDelete.value.id)
+        alerts.value = alerts.value.filter(alert => alert.id !== alertToDelete.value.id)
+        toast.success('Alerte supprimée avec succès')
+      } catch (error) {
+        console.error('Erreur lors de la suppression de l\'alerte :', error)
+        toast.error('Impossible de supprimer cette alerte')
+      } finally {
+        showDeleteConfirmModal.value = false
+        alertToDelete.value = null
+        store.dispatch('setLoading', false)
+      }
+    }
+
+    return {
+      alerts,
+      showDeleteConfirmModal,
+      alertToDelete,
+      notificationSettings,
+      formatCondition,
+      formatPrice,
+      getAlertStatus,
+      editAlert,
+      confirmDeleteAlert,
+      deleteAlert,
+      saveNotificationSettings
+    }
+  }
+}
+</script>

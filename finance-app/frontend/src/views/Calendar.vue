@@ -162,155 +162,74 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 export default {
   name: 'Calendar',
   setup() {
-    const store = useStore()
     const router = useRouter()
     const toast = useToast()
-    
+
     const events = ref([])
     const currentMonth = ref(new Date().getMonth())
     const currentYear = ref(new Date().getFullYear())
     const activeFilters = ref(['all'])
-    
-    // Charger les événements (données fictives pour l'exemple)
+
     onMounted(() => {
-      // Simuler le chargement des données depuis l'API
-      const now = new Date()
-      const startOfMonth = new Date(currentYear.value, currentMonth.value, 1)
-      const endOfMonth = new Date(currentYear.value, currentMonth.value + 1, 0)
-      
-      // Générer des événements fictifs pour le mois en cours
-      events.value = [
-        {
-          id: 1,
-          title: 'Publication des résultats Apple Inc.',
-          description: 'Résultats du 2ème trimestre fiscal 2025',
-          date: new Date(currentYear.value, currentMonth.value, 5, 16, 30),
-          type: 'earnings',
-          impact: 'high',
-          can_alert: true,
-          symbol: 'AAPL'
-        },
-        {
-          id: 2,
-          title: 'Décision de taux BCE',
-          description: 'Annonce des taux directeurs par la Banque Centrale Européenne',
-          date: new Date(currentYear.value, currentMonth.value, 10, 13, 45),
-          type: 'central_bank',
-          impact: 'high',
-          can_alert: false
-        },
-        {
-          id: 3,
-          title: 'Indice des prix à la consommation (IPC)',
-          description: 'Publication mensuelle de l\'inflation en zone euro',
-          date: new Date(currentYear.value, currentMonth.value, 15, 11, 0),
-          type: 'economic',
-          impact: 'medium',
-          can_alert: false
-        },
-        {
-          id: 4,
-          title: 'Dividende Microsoft',
-          description: 'Date de détachement du dividende trimestriel',
-          date: new Date(currentYear.value, currentMonth.value, 18, 9, 30),
-          type: 'dividend',
-          impact: 'low',
-          can_alert: true,
-          symbol: 'MSFT'
-        },
-        {
-          id: 5,
-          title: 'IPO TechStartup Inc.',
-          description: 'Introduction en bourse sur le Nasdaq',
-          date: new Date(currentYear.value, currentMonth.value, 22, 14, 30),
-          type: 'ipo',
-          impact: 'medium',
-          can_alert: true,
-          symbol: 'TECH'
-        },
-        {
-          id: 6,
-          title: 'Split d\'actions Amazon',
-          description: 'Split d\'actions 20:1',
-          date: new Date(currentYear.value, currentMonth.value, 25, 9, 30),
-          type: 'split',
-          impact: 'medium',
-          can_alert: true,
-          symbol: 'AMZN'
-        },
-        {
-          id: 7,
-          title: 'Rapport sur l\'emploi US',
-          description: 'Publication mensuelle des chiffres de l\'emploi aux États-Unis',
-          date: new Date(currentYear.value, currentMonth.value, 28, 14, 30),
-          type: 'economic',
-          impact: 'high',
-          can_alert: false
-        }
-      ]
+      events.value = createSampleEvents(currentYear.value, currentMonth.value)
     })
-    
-    // Filtrer les événements en fonction des filtres actifs
+
     const filteredEvents = computed(() => {
-      if (activeFilters.value.includes('all')) {
-        return events.value.filter(event => {
-          const eventDate = new Date(event.date)
-          return eventDate.getMonth() === currentMonth.value && eventDate.getFullYear() === currentYear.value
-        }).sort((a, b) => new Date(a.date) - new Date(b.date))
-      }
-      
-      return events.value.filter(event => {
+      const month = currentMonth.value
+      const year = currentYear.value
+
+      const byDate = (event) => {
         const eventDate = new Date(event.date)
-        return eventDate.getMonth() === currentMonth.value && 
-               eventDate.getFullYear() === currentYear.value && 
-               activeFilters.value.includes(event.type)
-      }).sort((a, b) => new Date(a.date) - new Date(b.date))
+        return eventDate.getMonth() === month && eventDate.getFullYear() === year
+      }
+
+      const base = events.value.filter(byDate)
+
+      if (activeFilters.value.includes('all')) {
+        return base.sort((a, b) => new Date(a.date) - new Date(b.date))
+      }
+
+      return base
+        .filter(event => activeFilters.value.includes(event.type))
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
     })
-    
-    // Naviguer au mois précédent
+
     const prevMonth = () => {
       if (currentMonth.value === 0) {
         currentMonth.value = 11
-        currentYear.value--
+        currentYear.value -= 1
       } else {
-        currentMonth.value--
+        currentMonth.value -= 1
       }
     }
-    
-    // Naviguer au mois suivant
+
     const nextMonth = () => {
       if (currentMonth.value === 11) {
         currentMonth.value = 0
-        currentYear.value++
+        currentYear.value += 1
       } else {
-        currentMonth.value++
+        currentMonth.value += 1
       }
     }
-    
-    // Activer/désactiver un filtre
+
     const toggleFilter = (filter) => {
       if (filter === 'all') {
         activeFilters.value = ['all']
         return
       }
-      
-      // Supprimer 'all' si présent
+
       if (activeFilters.value.includes('all')) {
-        activeFilters.value = activeFilters.value.filter(f => f !== 'all')
+        activeFilters.value = activeFilters.value.filter(item => item !== 'all')
       }
-      
-      // Ajouter ou supprimer le filtre
+
       if (activeFilters.value.includes(filter)) {
-        activeFilters.value = activeFilters.value.filter(f => f !== filter)
-        
-        // Si aucun filtre n'est actif, réactiver 'all'
+        activeFilters.value = activeFilters.value.filter(item => item !== filter)
         if (activeFilters.value.length === 0) {
           activeFilters.value = ['all']
         }
@@ -318,50 +237,165 @@ export default {
         activeFilters.value.push(filter)
       }
     }
-    
-    // Créer une alerte pour un événement
+
     const createAlert = (event) => {
-      if (!event.can_alert) return
-      
+      if (!event?.can_alert) return
+
       router.push({
         name: 'CreateAlert',
         query: {
           symbol: event.symbol,
           event_id: event.id,
-          event_date: event.date.toISOString()
+          event_date: new Date(event.date).toISOString()
         }
       })
     }
-    
-    // Ajouter un événement au calendrier personnel
+
     const addToCalendar = (event) => {
-      // Créer un lien pour ajouter l'événement au calendrier
       const title = encodeURIComponent(event.title)
-      const description = encodeURIComponent(event.description)
+      const description = encodeURIComponent(event.description || '')
       const location = encodeURIComponent('Finance App')
       const startDate = new Date(event.date)
-      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000) // +1 heure
-      
-      const start = startDate.toISOString().replace(/-|:|\.\d+/g, '')
-      const end = endDate.toISOString().replace(/-|:|\.\d+/g, '')
-      
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
+
+      const toCalendarDate = (date) => date.toISOString().replace(/-|:|\.\d+/g, '')
+      const start = toCalendarDate(startDate)
+      const end = toCalendarDate(endDate)
+
       const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&location=${location}&dates=${start}/${end}`
-      
-      // Ouvrir dans un nouvel onglet
       window.open(googleCalendarUrl, '_blank')
-      
       toast.success('Événement prêt à être ajouté à votre calendrier')
     }
-    
-    // Formater la date
-    const formatDate = (date) => {
-      return new Date(date).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
+
+    const formatDate = (date) => new Date(date).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+
+    const formatTime = (date) => new Date(date).toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    const formatEventType = (type) => {
+      const labels = {
+        earnings: 'Résultats',
+        economic: 'Données économiques',
+        central_bank: 'Banques centrales',
+        ipo: 'IPO',
+        dividend: 'Dividendes',
+        split: 'Splits'
+      }
+      return labels[type] || type
     }
-    
-    // Formater l'heure
-    const formatTime = (date
-(Content truncated due to size limit. Use line ranges to read in chunks)
+
+    const formatImpact = (impact) => {
+      const labels = {
+        high: 'Élevé',
+        medium: 'Moyen',
+        low: 'Faible'
+      }
+      return labels[impact] || impact
+    }
+
+    const formatMonth = (month) => {
+      const months = [
+        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+      ]
+      return months[month] || ''
+    }
+
+    return {
+      events,
+      currentMonth,
+      currentYear,
+      activeFilters,
+      filteredEvents,
+      prevMonth,
+      nextMonth,
+      toggleFilter,
+      createAlert,
+      addToCalendar,
+      formatDate,
+      formatTime,
+      formatEventType,
+      formatImpact,
+      formatMonth
+    }
+  }
+}
+
+function createSampleEvents(year, month) {
+  return [
+    {
+      id: 1,
+      title: 'Publication des résultats Apple Inc.',
+      description: 'Résultats du 2ème trimestre fiscal 2025',
+      date: new Date(year, month, 5, 16, 30),
+      type: 'earnings',
+      impact: 'high',
+      can_alert: true,
+      symbol: 'AAPL'
+    },
+    {
+      id: 2,
+      title: 'Décision de taux BCE',
+      description: 'Annonce des taux directeurs par la Banque Centrale Européenne',
+      date: new Date(year, month, 10, 13, 45),
+      type: 'central_bank',
+      impact: 'high',
+      can_alert: false
+    },
+    {
+      id: 3,
+      title: "Indice des prix à la consommation (IPC)",
+      description: "Publication mensuelle de l'inflation en zone euro",
+      date: new Date(year, month, 15, 11, 0),
+      type: 'economic',
+      impact: 'medium',
+      can_alert: false
+    },
+    {
+      id: 4,
+      title: 'Dividende Microsoft',
+      description: 'Date de détachement du dividende trimestriel',
+      date: new Date(year, month, 18, 9, 30),
+      type: 'dividend',
+      impact: 'low',
+      can_alert: true,
+      symbol: 'MSFT'
+    },
+    {
+      id: 5,
+      title: 'IPO TechStartup Inc.',
+      description: 'Introduction en bourse sur le Nasdaq',
+      date: new Date(year, month, 22, 14, 30),
+      type: 'ipo',
+      impact: 'medium',
+      can_alert: true,
+      symbol: 'TECH'
+    },
+    {
+      id: 6,
+      title: "Split d'actions Amazon",
+      description: "Split d'actions 20:1",
+      date: new Date(year, month, 25, 9, 30),
+      type: 'split',
+      impact: 'medium',
+      can_alert: true,
+      symbol: 'AMZN'
+    },
+    {
+      id: 7,
+      title: "Rapport sur l'emploi US",
+      description: "Publication mensuelle des chiffres de l'emploi aux États-Unis",
+      date: new Date(year, month, 28, 14, 30),
+      type: 'economic',
+      impact: 'high',
+      can_alert: false
+    }
+  ]
+}
+</script>
