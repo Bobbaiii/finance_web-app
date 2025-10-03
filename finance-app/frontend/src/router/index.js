@@ -4,7 +4,7 @@ import Portfolio from '../views/Portfolio.vue'
 import Alerts from '../views/Alerts.vue'
 import Settings from '../views/Settings.vue'
 import Calendar from '../views/Calendar.vue'
-import TechnicalAnalysis from '../views/TechnicalAnalysis.vue'
+import TechnicalAnalysis from '../views/analysis/TechnicalAnalysis.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
