@@ -6,15 +6,23 @@
       <div class="absolute bottom-0 right-12 h-64 w-64 rounded-full bg-secondary/20 blur-3xl dark:bg-secondary/15"></div>
     </div>
 
-    <header-component v-if="isAuthenticated" />
-    <main class="page-container">
-      <router-view v-slot="{ Component }">
-        <transition name="page" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </main>
-    <footer-component v-if="isAuthenticated" />
+    <div class="relative flex min-h-screen">
+      <sidebar-navigation v-if="isAuthenticated" />
+
+      <div class="flex min-h-screen flex-1 flex-col">
+        <header-component v-if="isAuthenticated" />
+        <main :class="mainClasses">
+          <router-view v-slot="{ Component }">
+            <transition name="page" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+        </main>
+        <footer-component v-if="isAuthenticated" />
+      </div>
+    </div>
+
+    <mobile-bottom-nav v-if="isAuthenticated" />
   </div>
 </template>
 
@@ -23,19 +31,29 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import HeaderComponent from './components/layout/HeaderComponent.vue'
 import FooterComponent from './components/layout/FooterComponent.vue'
+import SidebarNavigation from './components/layout/SidebarNavigation.vue'
+import MobileBottomNav from './components/layout/MobileBottomNav.vue'
 
 export default {
   name: 'App',
   components: {
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    SidebarNavigation,
+    MobileBottomNav
   },
   setup() {
     const store = useStore()
     const isAuthenticated = computed(() => store.getters['auth/isAuthenticated'])
 
+    const mainClasses = computed(() => [
+      'page-container flex-1',
+      isAuthenticated.value ? 'pb-32 lg:pb-16 xl:pb-20' : ''
+    ])
+
     return {
-      isAuthenticated
+      isAuthenticated,
+      mainClasses
     }
   }
 }

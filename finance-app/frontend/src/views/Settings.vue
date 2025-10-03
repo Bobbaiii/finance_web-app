@@ -344,6 +344,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
 import PageHeader from '@/components/layout/PageHeader.vue'
+import { useTheme } from '@/composables/useTheme'
 
 const PREFERENCES_KEY = 'finance-app-preferences'
 
@@ -380,7 +381,7 @@ export default {
       whatsapp_number: ''
     })
 
-    const isDarkMode = ref(false)
+    const { isDarkMode, toggleTheme, initializeTheme } = useTheme()
     const showDeleteAccountModal = ref(false)
 
     const user = computed(() => store.getters['auth/getUser'])
@@ -447,23 +448,6 @@ export default {
       }
     }
 
-    const initializeTheme = () => {
-      const storedTheme = localStorage.getItem('theme')
-      isDarkMode.value = storedTheme === 'dark' || document.documentElement.classList.contains('dark')
-      applyTheme()
-    }
-
-    const applyTheme = () => {
-      const root = document.documentElement
-      if (isDarkMode.value) {
-        root.classList.add('dark')
-        localStorage.setItem('theme', 'dark')
-      } else {
-        root.classList.remove('dark')
-        localStorage.setItem('theme', 'light')
-      }
-    }
-
     const updateProfile = async () => {
       try {
         store.dispatch('setLoading', true)
@@ -502,8 +486,7 @@ export default {
     }
 
     const toggleDarkMode = () => {
-      isDarkMode.value = !isDarkMode.value
-      applyTheme()
+      toggleTheme()
     }
 
     const savePreferences = () => {
