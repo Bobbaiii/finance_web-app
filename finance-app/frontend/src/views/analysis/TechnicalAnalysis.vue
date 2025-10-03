@@ -1,41 +1,46 @@
 <template>
-  <div class="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">Analyse Technique</h1>
+  <div class="page-card space-y-8">
+    <page-header
+      eyebrow="Analyse"
+      title="Analyse technique avancée"
+      description="Explorez vos actifs favoris, activez des indicateurs dynamiques et identifiez les signaux clés du marché."
+    />
 
-      <div class="mt-4 md:mt-0 relative w-full md:w-auto">
-        <div class="flex">
-          <input
-            type="text"
-            v-model="searchQuery"
-            @input="searchAssets"
-            placeholder="Rechercher un actif..."
-            class="w-full md:w-64 px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-l-md focus:outline-none focus:ring-primary focus:border-primary dark:bg-neutral-700 dark:text-white"
-          />
-          <button
-            class="bg-primary text-white px-4 py-2 rounded-r-md hover:bg-primary-dark focus:outline-none"
-            @click="searchAssets"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-        </div>
-
-        <div
-          v-if="searchResults.length > 0"
-          class="absolute z-10 mt-1 w-full bg-white dark:bg-neutral-800 shadow-lg rounded-md max-h-60 overflow-y-auto"
-        >
-          <ul class="py-1">
-            <li
-              v-for="result in searchResults"
-              :key="result.symbol"
-              class="px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
-              @click="selectAsset(result)"
+    <div class="section-card space-y-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="relative w-full md:w-auto">
+          <div class="flex">
+            <input
+              type="text"
+              v-model="searchQuery"
+              @input="searchAssets"
+              placeholder="Rechercher un actif..."
+              class="w-full md:w-64 rounded-l-full border border-white/40 bg-white/70 px-4 py-2 text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:border-neutral-700/60 dark:bg-neutral-900/70 dark:text-white"
+            />
+            <button
+              class="bg-primary text-white px-4 py-2 rounded-r-md hover:bg-primary-dark focus:outline-none"
+              @click="searchAssets"
             >
-              <div class="flex justify-between">
-                <div>
-                  <span class="font-medium text-neutral-900 dark:text-white">{{ result.symbol }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            v-if="searchResults.length > 0"
+            class="absolute z-10 mt-2 w-full rounded-2xl border border-white/60 bg-white/90 shadow-2xl backdrop-blur dark:border-neutral-700/60 dark:bg-neutral-900/90 max-h-60 overflow-y-auto"
+          >
+            <ul class="py-1">
+              <li
+                v-for="result in searchResults"
+                :key="result.symbol"
+                class="px-4 py-2 text-sm text-neutral-700 transition hover:bg-white dark:text-neutral-200 dark:hover:bg-neutral-800 cursor-pointer"
+                @click="selectAsset(result)"
+              >
+                <div class="flex justify-between">
+                  <div>
+                    <span class="font-medium text-neutral-900 dark:text-white">{{ result.symbol }}</span>
                   <span class="ml-2 text-sm text-neutral-500 dark:text-neutral-400">{{ result.name }}</span>
                 </div>
                 <span class="text-xs text-neutral-500 dark:text-neutral-400">{{ result.exchange }}</span>
@@ -46,13 +51,15 @@
       </div>
     </div>
 
-    <div v-if="currentAsset">
-      <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        <div>
-          <div class="flex items-center">
-            <h2 class="text-xl font-bold text-neutral-900 dark:text-white">{{ currentAsset.symbol }}</h2>
-            <span class="ml-2 text-sm text-neutral-500 dark:text-neutral-400">{{ currentAsset.name }}</span>
-            <button @click="toggleFavorite" class="ml-2 text-neutral-400 hover:text-yellow-500 focus:outline-none">
+      </div>
+
+      <div v-if="currentAsset" class="space-y-6">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div class="flex items-center">
+              <h2 class="text-xl font-bold text-neutral-900 dark:text-white">{{ currentAsset.symbol }}</h2>
+              <span class="ml-2 text-sm text-neutral-500 dark:text-neutral-400">{{ currentAsset.name }}</span>
+              <button @click="toggleFavorite" class="ml-2 text-neutral-400 hover:text-yellow-500 focus:outline-none">
               <svg v-if="isFavorite" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
@@ -71,40 +78,40 @@
             {{ formatChange(priceChange, priceChangePercent) }}
           </p>
         </div>
-      </div>
+        </div>
 
-      <div class="border-b border-neutral-200 dark:border-neutral-700 mb-6">
-        <nav class="-mb-px flex space-x-8">
-          <button
-            @click="activeTab = 'chart'"
-            class="py-4 px-1 border-b-2 font-medium text-sm focus:outline-none"
-            :class="activeTab === 'chart' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300 dark:text-neutral-400 dark:hover:text-neutral-300'"
-          >
-            Graphique
-          </button>
-          <button
-            @click="activeTab = 'indicators'"
-            class="py-4 px-1 border-b-2 font-medium text-sm focus:outline-none"
-            :class="activeTab === 'indicators' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300 dark:text-neutral-400 dark:hover:text-neutral-300'"
-          >
-            Indicateurs
-          </button>
-          <button
-            @click="activeTab = 'ict'"
-            class="py-4 px-1 border-b-2 font-medium text-sm focus:outline-none"
-            :class="activeTab === 'ict' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300 dark:text-neutral-400 dark:hover:text-neutral-300'"
-          >
-            ICT
-          </button>
-          <button
-            @click="activeTab = 'overview'"
-            class="py-4 px-1 border-b-2 font-medium text-sm focus:outline-none"
-            :class="activeTab === 'overview' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300 dark:text-neutral-400 dark:hover:text-neutral-300'"
-          >
-            Aperçu
-          </button>
-        </nav>
-      </div>
+        <div class="border-b border-white/40 dark:border-neutral-700/60">
+          <nav class="-mb-px flex flex-wrap gap-4">
+            <button
+              @click="activeTab = 'chart'"
+              class="rounded-full px-4 py-2 text-sm font-medium transition"
+              :class="activeTab === 'chart' ? 'bg-primary text-white shadow' : 'bg-white/70 text-neutral-600 hover:bg-white dark:bg-neutral-900/70 dark:text-neutral-300 dark:hover:bg-neutral-800'"
+            >
+              Graphique
+            </button>
+            <button
+              @click="activeTab = 'indicators'"
+              class="rounded-full px-4 py-2 text-sm font-medium transition"
+              :class="activeTab === 'indicators' ? 'bg-primary text-white shadow' : 'bg-white/70 text-neutral-600 hover:bg-white dark:bg-neutral-900/70 dark:text-neutral-300 dark:hover:bg-neutral-800'"
+            >
+              Indicateurs
+            </button>
+            <button
+              @click="activeTab = 'ict'"
+              class="rounded-full px-4 py-2 text-sm font-medium transition"
+              :class="activeTab === 'ict' ? 'bg-primary text-white shadow' : 'bg-white/70 text-neutral-600 hover:bg-white dark:bg-neutral-900/70 dark:text-neutral-300 dark:hover:bg-neutral-800'"
+            >
+              ICT
+            </button>
+            <button
+              @click="activeTab = 'overview'"
+              class="rounded-full px-4 py-2 text-sm font-medium transition"
+              :class="activeTab === 'overview' ? 'bg-primary text-white shadow' : 'bg-white/70 text-neutral-600 hover:bg-white dark:bg-neutral-900/70 dark:text-neutral-300 dark:hover:bg-neutral-800'"
+            >
+              Aperçu
+            </button>
+          </nav>
+        </div>
 
       <div>
         <div v-if="activeTab === 'chart'" class="mb-6">
@@ -322,6 +329,7 @@
 <script>
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { useToast } from 'vue-toastification'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 const MOCK_ASSETS = [
   { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', currency: 'USD' },
@@ -341,6 +349,9 @@ const DEFAULT_ASSET = {
 
 export default {
   name: 'TechnicalAnalysis',
+  components: {
+    PageHeader
+  },
   setup() {
     const toast = useToast()
 

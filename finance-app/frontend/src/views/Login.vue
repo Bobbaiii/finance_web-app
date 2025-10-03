@@ -1,18 +1,23 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-neutral-900 dark:text-white">
+  <div class="auth-shell">
+    <div class="auth-card space-y-8">
+      <div class="text-center space-y-3">
+        <div class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+        </div>
+        <h2 class="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
           Connexion à votre compte
         </h2>
-        <p class="mt-2 text-center text-sm text-neutral-600 dark:text-neutral-400">
+        <p class="text-sm text-neutral-500 dark:text-neutral-400">
           Ou
-          <router-link to="/register" class="font-medium text-primary hover:text-primary-dark">
+          <router-link to="/register" class="font-semibold text-primary hover:text-primary-light">
             créez un nouveau compte
           </router-link>
         </p>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="login">
+      <form class="space-y-6" @submit.prevent="login">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
             <label for="email-address" class="sr-only">Adresse email</label>
@@ -67,12 +72,12 @@
           <button
             type="submit"
             :disabled="loading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            class="group relative w-full flex justify-center overflow-hidden rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
               <svg
                 v-if="!loading"
-                class="h-5 w-5 text-primary-dark group-hover:text-primary-light"
+                class="h-5 w-5 text-primary-light group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
