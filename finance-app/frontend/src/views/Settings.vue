@@ -1,12 +1,14 @@
 <template>
-  <div class="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">Paramètres</h1>
-    </div>
+  <div class="page-card space-y-10">
+    <page-header
+      eyebrow="Personnalisation"
+      title="Paramètres avancés"
+      description="Ajustez votre profil, sécurisez l'accès et adaptez la plateforme à vos préférences."
+    />
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
       <div class="col-span-1">
-        <div class="bg-neutral-50 dark:bg-neutral-700 p-6 rounded-lg">
+        <div class="section-card h-full">
           <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">Profil utilisateur</h2>
 
           <div class="flex items-center mb-6">
@@ -51,7 +53,7 @@
       </div>
 
       <div class="col-span-1">
-        <div class="bg-neutral-50 dark:bg-neutral-700 p-6 rounded-lg">
+        <div class="section-card h-full">
           <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">Sécurité</h2>
 
           <form @submit.prevent="updatePassword">
@@ -97,7 +99,7 @@
       </div>
 
       <div class="col-span-1">
-        <div class="bg-neutral-50 dark:bg-neutral-700 p-6 rounded-lg">
+        <div class="section-card h-full">
           <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">Préférences</h2>
 
           <div class="mb-6">
@@ -156,8 +158,7 @@
       </div>
     </div>
 
-    <div class="mt-6">
-      <div class="bg-neutral-50 dark:bg-neutral-700 p-6 rounded-lg">
+    <div class="section-card">
         <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">Paramètres de notification</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -232,20 +233,22 @@
           </div>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-6 flex justify-end">
           <button
             @click="saveNotificationSettings"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow hover:bg-primary-dark"
           >
-            Enregistrer les paramètres de notification
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Enregistrer les notifications
           </button>
         </div>
       </div>
     </div>
 
-    <div class="mt-6">
-      <div class="bg-neutral-50 dark:bg-neutral-700 p-6 rounded-lg">
-        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">Exportation de données</h2>
+    <div class="section-card space-y-6">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Exportation de données</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -253,10 +256,10 @@
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
               Exportez vos données pour les sauvegarder ou les utiliser dans d'autres applications.
             </p>
-            <div class="space-y-4">
+            <div class="space-y-3">
               <button
                 @click="exportPortfolios"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow hover:bg-primary-dark"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -265,7 +268,7 @@
               </button>
               <button
                 @click="exportAlerts"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow hover:bg-primary-dark"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -281,7 +284,7 @@
             </p>
             <button
               @click="showDeleteAccountModal = true"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-danger hover:bg-danger-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-danger"
+              class="inline-flex items-center gap-2 rounded-full bg-danger px-5 py-2 text-sm font-semibold text-white shadow hover:bg-danger-dark"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.14 21H7.86a2 2 0 01-1.993-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0h8l1-2.5A2 2 0 0015.13 3H8.87a2 2 0 00-1.87 1.5L6 7z" />
@@ -291,14 +294,13 @@
           </div>
         </div>
       </div>
-    </div>
 
     <div v-if="showDeleteAccountModal" class="fixed inset-0 z-10 overflow-y-auto" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-neutral-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showDeleteAccountModal = false"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white dark:bg-neutral-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white dark:bg-neutral-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="modal-content glass-panel inline-block align-bottom text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-danger-light sm:mx-0 sm:h-10 sm:w-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -315,7 +317,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-neutral-50 dark:bg-neutral-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-white/60 px-4 py-3 backdrop-blur dark:bg-neutral-900/60 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="button"
               @click="deleteAccount"
@@ -334,18 +336,22 @@
         </div>
       </div>
     </div>
-  </div>
+  
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 const PREFERENCES_KEY = 'finance-app-preferences'
 
 export default {
   name: 'Settings',
+  components: {
+    PageHeader
+  },
   setup() {
     const store = useStore()
     const toast = useToast()

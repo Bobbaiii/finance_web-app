@@ -1,217 +1,185 @@
 <template>
-  <div class="flex flex-col h-screen">
-    <nav class="bg-white dark:bg-neutral-800 shadow-md">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <router-link to="/dashboard" class="text-xl font-bold text-primary">Finance Analysis</router-link>
-            </div>
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <router-link 
-                to="/dashboard" 
-                class="border-transparent text-neutral-500 dark:text-neutral-300 hover:border-primary hover:text-primary dark:hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                :class="{ 'border-primary text-primary': isActive('dashboard') }"
-              >
-                Tableau de bord
-              </router-link>
-              <router-link 
-                to="/analysis/technical" 
-                class="border-transparent text-neutral-500 dark:text-neutral-300 hover:border-primary hover:text-primary dark:hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                :class="{ 'border-primary text-primary': isActive('analysis') }"
-              >
-                Analyse
-              </router-link>
-              <router-link 
-                to="/portfolio" 
-                class="border-transparent text-neutral-500 dark:text-neutral-300 hover:border-primary hover:text-primary dark:hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                :class="{ 'border-primary text-primary': isActive('portfolio') }"
-              >
-                Portefeuille
-              </router-link>
-              <router-link 
-                to="/alerts" 
-                class="border-transparent text-neutral-500 dark:text-neutral-300 hover:border-primary hover:text-primary dark:hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                :class="{ 'border-primary text-primary': isActive('alerts') }"
-              >
-                Alertes
-              </router-link>
-              <router-link 
-                to="/calendar" 
-                class="border-transparent text-neutral-500 dark:text-neutral-300 hover:border-primary hover:text-primary dark:hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                :class="{ 'border-primary text-primary': isActive('calendar') }"
-              >
-                Calendrier
-              </router-link>
-            </div>
-          </div>
-          <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <button 
-              @click="toggleDarkMode" 
-              class="p-1 rounded-full text-neutral-500 dark:text-neutral-300 hover:text-primary dark:hover:text-primary focus:outline-none"
-            >
-              <span class="sr-only">Changer de thème</span>
-              <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  <header class="relative z-20">
+    <nav class="glass-panel mx-auto mt-6 w-[calc(100%-2rem)] max-w-7xl rounded-3xl px-4 py-3 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="flex items-center gap-6">
+          <router-link to="/dashboard" class="flex items-center text-xl font-semibold tracking-tight text-neutral-900 transition hover:text-primary dark:text-white">
+            <span class="mr-2 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+                <path d="M12 3a9 9 0 00-9 9v5.5A3.5 3.5 0 006.5 21h11a3.5 3.5 0 003.5-3.5V12a9 9 0 00-9-9zm0 2a7 7 0 017 7v5.5c0 .828-.672 1.5-1.5 1.5h-11A1.5 1.5 0 015 17.5V12a7 7 0 017-7zm0 4a3 3 0 00-3 3v2a3 3 0 006 0v-2a3 3 0 00-3-3zm0 2a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z" />
               </svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            </button>
+            </span>
+            Finance Analysis
+          </router-link>
 
-            <div class="ml-3 relative">
-              <div>
-                <button 
-                  @click="toggleUserMenu" 
-                  class="bg-white dark:bg-neutral-800 rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                >
-                  <span class="sr-only">Ouvrir le menu utilisateur</span>
-                  <div class="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center">
-                    {{ userInitials }}
-                  </div>
-                </button>
-              </div>
-              <div 
-                v-if="userMenuOpen" 
-                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-              >
-                <router-link 
-                  to="/settings" 
-                  class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-                  @click="userMenuOpen = false"
-                >
-                  Paramètres
-                </router-link>
-                <a 
-                  href="#" 
-                  @click.prevent="logout" 
-                  class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-                >
-                  Déconnexion
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="-mr-2 flex items-center sm:hidden">
-            <button 
-              @click="toggleMobileMenu" 
-              class="inline-flex items-center justify-center p-2 rounded-md text-neutral-400 hover:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+          <div class="hidden items-center gap-1 rounded-full bg-white/60 px-1 py-1 text-sm font-medium dark:bg-neutral-800/80 md:flex">
+            <router-link
+              v-for="item in navigation"
+              :key="item.route"
+              :to="item.to"
+              class="inline-flex items-center rounded-full px-4 py-2 transition"
+              :class="isActive(item.route)
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-neutral-500 hover:text-neutral-900 hover:bg-white dark:text-neutral-300 dark:hover:text-white dark:hover:bg-neutral-700/70'"
             >
-              <span class="sr-only">Ouvrir le menu principal</span>
-              <svg 
-                :class="{ 'hidden': mobileMenuOpen, 'block': !mobileMenuOpen }" 
-                class="h-6 w-6" 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
-                aria-hidden="true"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              <svg 
-                :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }" 
-                class="h-6 w-6" 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor" 
-                aria-hidden="true"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              {{ item.label }}
+            </router-link>
+          </div>
+        </div>
+
+        <div class="hidden items-center gap-4 md:flex">
+          <button
+            @click="toggleDarkMode"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/60 bg-white/80 text-neutral-500 transition hover:text-primary dark:border-neutral-700/70 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:text-primary"
+          >
+            <span class="sr-only">Changer de thème</span>
+            <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+
+          <div class="relative">
+            <button
+              @click="toggleUserMenu"
+              class="flex items-center gap-3 rounded-full border border-white/60 bg-white/80 py-1 pl-1 pr-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:text-primary dark:border-neutral-700/70 dark:bg-neutral-800/80 dark:text-neutral-200"
+            >
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white">
+                {{ userInitials }}
+              </span>
+              <span class="hidden lg:block">{{ user.full_name || 'Utilisateur' }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
+            <div
+              v-if="userMenuOpen"
+              class="glass-panel absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl p-2 text-sm shadow-2xl"
+            >
+              <div class="px-3 py-2 text-xs uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
+                Accès rapide
+              </div>
+              <router-link
+                to="/settings"
+                class="flex items-center gap-3 rounded-xl px-3 py-2 text-neutral-600 transition hover:bg-white/70 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-700/80 dark:hover:text-white"
+                @click="userMenuOpen = false"
+              >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V7a4 4 0 118 0v4m-2 4h-4m0 0v4m0-4h4m-4 0H7" />
+                  </svg>
+                </span>
+                Paramètres
+              </router-link>
+              <button
+                @click.prevent="logout"
+                class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-neutral-600 transition hover:bg-danger/10 hover:text-danger dark:text-neutral-300 dark:hover:bg-danger/15 dark:hover:text-danger"
+              >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8v8" />
+                  </svg>
+                </span>
+                Déconnexion
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div class="flex items-center gap-3 md:hidden">
+          <button
+            @click="toggleDarkMode"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/60 bg-white/80 text-neutral-500 transition hover:text-primary dark:border-neutral-700/70 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:text-primary"
+          >
+            <span class="sr-only">Changer de thème</span>
+            <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+          <button
+            @click="toggleMobileMenu"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/60 bg-white/80 text-neutral-500 transition hover:text-primary dark:border-neutral-700/70 dark:bg-neutral-800/80 dark:text-neutral-300 dark:hover:text-primary"
+          >
+            <span class="sr-only">Ouvrir le menu principal</span>
+            <svg
+              :class="{ hidden: mobileMenuOpen, block: !mobileMenuOpen }"
+              class="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg
+              :class="{ block: mobileMenuOpen, hidden: !mobileMenuOpen }"
+              class="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }" class="sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-          <router-link 
-            to="/dashboard" 
-            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            :class="isActive('dashboard') ? 'border-primary text-primary bg-primary-50 dark:bg-primary-900 dark:bg-opacity-10' : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'"
+      <div
+        :class="{ 'max-h-[460px] opacity-100': mobileMenuOpen, 'max-h-0 opacity-0': !mobileMenuOpen }"
+        class="md:hidden overflow-hidden transition-all duration-300 ease-in-out"
+      >
+        <div class="mt-4 space-y-2 rounded-2xl bg-white/80 p-3 shadow-inner dark:bg-neutral-900/80">
+          <router-link
+            v-for="item in navigation"
+            :key="item.route"
+            :to="item.to"
+            class="block rounded-xl px-4 py-3 text-sm font-medium transition"
+            :class="isActive(item.route)
+              ? 'bg-primary/10 text-primary'
+              : 'text-neutral-600 hover:bg-white hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800'"
             @click="mobileMenuOpen = false"
           >
-            Tableau de bord
+            {{ item.label }}
           </router-link>
-          <router-link 
-            to="/analysis/technical" 
-            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            :class="isActive('analysis') ? 'border-primary text-primary bg-primary-50 dark:bg-primary-900 dark:bg-opacity-10' : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'"
-            @click="mobileMenuOpen = false"
-          >
-            Analyse
-          </router-link>
-          <router-link 
-            to="/portfolio" 
-            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            :class="isActive('portfolio') ? 'border-primary text-primary bg-primary-50 dark:bg-primary-900 dark:bg-opacity-10' : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'"
-            @click="mobileMenuOpen = false"
-          >
-            Portefeuille
-          </router-link>
-          <router-link 
-            to="/alerts" 
-            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            :class="isActive('alerts') ? 'border-primary text-primary bg-primary-50 dark:bg-primary-900 dark:bg-opacity-10' : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'"
-            @click="mobileMenuOpen = false"
-          >
-            Alertes
-          </router-link>
-          <router-link 
-            to="/calendar" 
-            class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-            :class="isActive('calendar') ? 'border-primary text-primary bg-primary-50 dark:bg-primary-900 dark:bg-opacity-10' : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'"
-            @click="mobileMenuOpen = false"
-          >
-            Calendrier
-          </router-link>
-        </div>
-        <div class="pt-4 pb-3 border-t border-neutral-200 dark:border-neutral-700">
-          <div class="flex items-center px-4">
-            <div class="flex-shrink-0">
-              <div class="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center">
+          <div class="rounded-2xl bg-white/70 p-4 text-sm dark:bg-neutral-900/70">
+            <div class="flex items-center gap-3">
+              <div class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
                 {{ userInitials }}
               </div>
+              <div class="text-sm">
+                <p class="font-semibold text-neutral-900 dark:text-white">{{ user.full_name }}</p>
+                <p class="text-neutral-500 dark:text-neutral-400">{{ user.email }}</p>
+              </div>
             </div>
-            <div class="ml-3">
-              <div class="text-base font-medium text-neutral-800 dark:text-white">{{ user.full_name }}</div>
-              <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{{ user.email }}</div>
+            <div class="mt-4 grid gap-2">
+              <router-link
+                to="/settings"
+                class="rounded-xl px-3 py-2 text-neutral-600 transition hover:bg-white hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                @click="mobileMenuOpen = false"
+              >
+                Paramètres
+              </router-link>
+              <button
+                @click.prevent="logout"
+                class="rounded-xl px-3 py-2 text-left text-neutral-600 transition hover:bg-danger/10 hover:text-danger dark:text-neutral-300 dark:hover:bg-danger/15 dark:hover:text-danger"
+              >
+                Déconnexion
+              </button>
             </div>
-            <button 
-              @click="toggleDarkMode" 
-              class="ml-auto p-1 rounded-full text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300 focus:outline-none"
-            >
-              <span class="sr-only">Changer de thème</span>
-              <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            </button>
-          </div>
-          <div class="mt-3 space-y-1">
-            <router-link 
-              to="/settings" 
-              class="block px-4 py-2 text-base font-medium text-neutral-500 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              @click="mobileMenuOpen = false"
-            >
-              Paramètres
-            </router-link>
-            <a 
-              href="#" 
-              @click.prevent="logout" 
-              class="block px-4 py-2 text-base font-medium text-neutral-500 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700"
-            >
-              Déconnexion
-            </a>
           </div>
         </div>
       </div>
     </nav>
-  </div>
+  </header>
 </template>
 
 <script>
@@ -230,6 +198,14 @@ export default {
 
     const mobileMenuOpen = ref(false)
     const userMenuOpen = ref(false)
+
+    const navigation = [
+      { label: 'Tableau de bord', route: 'dashboard', to: '/dashboard' },
+      { label: 'Analyse', route: 'analysis', to: '/analysis/technical' },
+      { label: 'Portefeuille', route: 'portfolio', to: '/portfolio' },
+      { label: 'Alertes', route: 'alerts', to: '/alerts' },
+      { label: 'Calendrier', route: 'calendar', to: '/calendar' }
+    ]
 
     const user = computed(() => store.getters['auth/getUser'] || {})
     const isDarkMode = computed(() => store.getters.isDarkMode)
@@ -287,6 +263,7 @@ export default {
       user,
       isDarkMode,
       userInitials,
+      navigation,
       toggleMobileMenu,
       toggleUserMenu,
       toggleDarkMode,

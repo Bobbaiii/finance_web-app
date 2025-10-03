@@ -1,13 +1,21 @@
 <template>
-  <div class="bg-neutral-100 dark:bg-neutral-900 py-4">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center">
-        <p class="text-sm text-neutral-500 dark:text-neutral-400">
-          © {{ currentYear }} Finance Analysis Platform. Tous droits réservés.
-        </p>
+  <footer class="relative z-10 pb-10">
+    <div class="mx-auto w-[calc(100%-2rem)] max-w-7xl">
+      <div class="glass-panel rounded-3xl px-6 py-5 sm:px-10">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-medium uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500">Finance Analysis</p>
+            <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+              Plateforme d'analyse financière moderne et intuitive.
+            </p>
+          </div>
+          <div class="text-sm text-neutral-500 dark:text-neutral-400">
+            © {{ currentYear }} Finance Analysis Platform. Tous droits réservés.
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </footer>
 </template>
 
 <script>

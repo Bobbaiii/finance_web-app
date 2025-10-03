@@ -1,55 +1,65 @@
 <template>
-  <div class="bg-white dark:bg-neutral-800 shadow rounded-lg p-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">Gestion de Portefeuille</h1>
+  <div class="page-card space-y-10">
+    <page-header
+      eyebrow="Gestion"
+      title="Portefeuilles intelligents"
+      description="Structurez vos investissements, suivez vos performances et adaptez vos stratégies en toute clarté."
+    >
+      <template #actions>
+        <button
+          @click="showCreatePortfolioModal = true"
+          class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-dark"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Nouveau portefeuille
+        </button>
+      </template>
+    </page-header>
 
-      <button
-        @click="showCreatePortfolioModal = true"
-        class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Créer un portefeuille
-      </button>
-    </div>
-
-    <div v-if="portfolios.length > 0" class="mb-8">
+    <div v-if="portfolios.length > 0" class="section-card overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-neutral-200 dark:divide-neutral-600">
+        <table class="min-w-full divide-y divide-white/40 dark:divide-neutral-800/60">
           <thead>
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Nom</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Valeur</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Profit/Perte</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Rendement</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Nom</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Valeur</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Profit/Perte</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Rendement</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-neutral-200 dark:divide-neutral-600">
-            <tr v-for="portfolio in portfolios" :key="portfolio.id" class="hover:bg-neutral-50 dark:hover:bg-neutral-700">
+          <tbody class="divide-y divide-white/30 dark:divide-neutral-800/60">
+            <tr v-for="portfolio in portfolios" :key="portfolio.id" class="bg-white/70 transition hover:bg-white/95 dark:bg-neutral-900/70 dark:hover:bg-neutral-900/85">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="text-sm font-medium text-neutral-900 dark:text-white">{{ portfolio.name }}</div>
+                  <div class="mr-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary font-semibold">
+                    {{ portfolio.name.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-neutral-900 dark:text-white">{{ portfolio.name }}</div>
+                    <p class="text-xs text-neutral-500 dark:text-neutral-400" v-if="portfolio.description">{{ portfolio.description }}</p>
+                  </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-neutral-900 dark:text-white">{{ formatPrice(portfolio.current_value) }}</div>
+                <div class="text-sm font-semibold text-neutral-900 dark:text-white">{{ formatPrice(portfolio.current_value) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm" :class="portfolio.profit_loss >= 0 ? 'text-success' : 'text-danger'">
+                <div class="text-sm font-semibold" :class="portfolio.profit_loss >= 0 ? 'text-success' : 'text-danger'">
                   {{ formatPrice(portfolio.profit_loss) }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm" :class="portfolio.profit_loss_percentage >= 0 ? 'text-success' : 'text-danger'">
+                <div class="text-sm font-semibold" :class="portfolio.profit_loss_percentage >= 0 ? 'text-success' : 'text-danger'">
                   {{ formatPercentage(portfolio.profit_loss_percentage) }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <router-link :to="`/portfolio/${portfolio.id}`" class="text-primary hover:text-primary-dark mr-3">Détails</router-link>
-                <button @click="editPortfolio(portfolio)" class="text-secondary hover:text-secondary-dark mr-3">Modifier</button>
-                <button @click="confirmDeletePortfolio(portfolio)" class="text-danger hover:text-danger-dark">Supprimer</button>
+                <router-link :to="`/portfolio/${portfolio.id}`" class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20">Détails</router-link>
+                <button @click="editPortfolio(portfolio)" class="ml-2 rounded-full bg-secondary/10 px-3 py-1 text-xs font-semibold text-secondary transition hover:bg-secondary/20">Modifier</button>
+                <button @click="confirmDeletePortfolio(portfolio)" class="ml-2 rounded-full bg-danger/10 px-3 py-1 text-xs font-semibold text-danger transition hover:bg-danger/20">Supprimer</button>
               </td>
             </tr>
           </tbody>
@@ -57,20 +67,28 @@
       </div>
     </div>
 
-    <div v-else class="text-center py-12">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-neutral-900 dark:text-white">Aucun portefeuille</h3>
-      <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Commencez par créer un portefeuille pour suivre vos investissements.</p>
+    <div v-else class="section-card text-center">
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+      </div>
+      <h3 class="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">Aucun portefeuille</h3>
+      <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Créez votre premier portefeuille pour suivre vos investissements en temps réel.</p>
+      <button
+        @click="showCreatePortfolioModal = true"
+        class="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow hover:bg-primary-dark"
+      >
+        Créer un portefeuille
+      </button>
     </div>
 
     <div v-if="showCreatePortfolioModal" class="fixed inset-0 z-10 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-neutral-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showCreatePortfolioModal = false"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white dark:bg-neutral-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white dark:bg-neutral-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="modal-content glass-panel inline-block align-bottom text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-primary-light sm:mx-0 sm:h-10 sm:w-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -122,7 +140,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-neutral-50 dark:bg-neutral-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-white/60 px-4 py-3 backdrop-blur dark:bg-neutral-900/60 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="button"
               @click="savePortfolio"
@@ -146,8 +164,8 @@
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-neutral-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showDeleteConfirmModal = false"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white dark:bg-neutral-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white dark:bg-neutral-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="modal-content glass-panel inline-block align-bottom text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-danger-light sm:mx-0 sm:h-10 sm:w-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,7 +184,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-neutral-50 dark:bg-neutral-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-white/60 px-4 py-3 backdrop-blur dark:bg-neutral-900/60 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="button"
               @click="deletePortfolio"
@@ -193,9 +211,13 @@ import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import PageHeader from '@/components/layout/PageHeader.vue'
 
 export default {
   name: 'Portfolio',
+  components: {
+    PageHeader
+  },
   setup() {
     const store = useStore()
     const router = useRouter()
