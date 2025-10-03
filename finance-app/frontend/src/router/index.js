@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '../Dashboard.vue'
-import Portfolio from '../Portfolio.vue'
-import Alerts from '../Alerts.vue'
-import Settings from '../Settings.vue'
-import Calendar from '../Calendar.vue'
-import TechnicalAnalysis from '../TechnicalAnalysis.vue'
-import Login from '../Login.vue'
-import Register from '../Register.vue'
+import Dashboard from '../views/Dashboard.vue'
+import Portfolio from '../views/Portfolio.vue'
+import Alerts from '../views/Alerts.vue'
+import Settings from '../views/Settings.vue'
+import Calendar from '../views/Calendar.vue'
+import TechnicalAnalysis from '../views/TechnicalAnalysis.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 
 const routes = [
   {
